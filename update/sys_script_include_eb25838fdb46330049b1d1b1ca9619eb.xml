@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_358560_atf_train.testExecutor</api_name>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>testExecutor</name>
+        <script><![CDATA[var testExecutor = Class.create();
+testExecutor.prototype = {
+	initialize: function() {
+	},
+	
+	getTestData: function(testRes,articleName,selectedKB) {
+		var data = {
+			articleName: articleName,
+			selectedKnowledgeBase: selectedKB,
+			data: this.getSteps(testRes),
+		};
+		var db = new x_358560_atf_train.documentationBuilder(data);
+		return db.createKnowledgeBaseRecord();
+		//return data;
+	},
+	
+	getSteps: function(testResultID) {
+		var count = 0;
+		var scData = this.getScreenShotData(testResultID);
+		var stepData = [];
+		var tr = new GlideRecord('sys_atf_test_result_item');
+		tr.addQuery('step','!=','');
+		tr.addQuery('test_result',testResultID);
+		tr.query();
+		while(tr.next()){
+			var scImageName = '';
+			var scID = '';
+			if(tr.step.step_config.step_env.name == 'UI'){
+				scImageName = scData[count][1];
+				scID = scData[count][0];
+				count++;
+			}
+			//gs.info(tr.step + ' : ' + tr.step.description.toString() + ' : ' + scImageName + ' : ' + scID);
+			var resultStep = {
+				screenShotImageName: scImageName,
+				screenShotID: scID,
+				step: tr.step.display_name.toString(),
+				description: tr.step.description.toString()
+			};
+			stepData.push(resultStep);
+		}
+		return stepData;
+	},
+	
+	getScreenShotData: function(testSysID){
+		var screenShots = [];
+		var attachment = new GlideRecord('sys_attachment');
+		attachment.addQuery('table_sys_id',testSysID);
+		attachment.orderBy('sys_created_on');
+		attachment.query();
+		while(attachment.next()){
+			screenShots.push([attachment.sys_id,attachment.file_name]);
+		}
+		return screenShots;
+	},
+
+	type: 'testExecutor'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>ben.ennis</sys_created_by>
+        <sys_created_on>2019-06-19 22:57:12</sys_created_on>
+        <sys_id>eb25838fdb46330049b1d1b1ca9619eb</sys_id>
+        <sys_mod_count>19</sys_mod_count>
+        <sys_name>testExecutor</sys_name>
+        <sys_package display_value="ATF Training Doc Builder" source="x_358560_atf_train">9d1bf647db46330049b1d1b1ca96192a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="ATF Training Doc Builder">9d1bf647db46330049b1d1b1ca96192a</sys_scope>
+        <sys_update_name>sys_script_include_eb25838fdb46330049b1d1b1ca9619eb</sys_update_name>
+        <sys_updated_by>ben.ennis</sys_updated_by>
+        <sys_updated_on>2019-07-08 04:01:28</sys_updated_on>
+    </sys_script_include>
+</record_update>

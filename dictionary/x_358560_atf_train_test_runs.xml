@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element label="Test Runs" max_length="40" name="x_358560_atf_train_test_runs" type="collection">
+        <element attributes="readonly_clickthrough=true" label="KB Article" max_length="32" name="kb_article" read_only="true" reference="kb_knowledge" type="reference"/>
+        <element label="Knowledge Base" mandatory="true" max_length="32" name="knowledge_base" reference="kb_knowledge_base" type="reference"/>
+        <element label="Test result to Document" mandatory="true" max_length="32" name="test" reference="sys_atf_test_result" reference_qual="status=success^ORstatus=success_with_warnings^EQ" reference_qual_condition="status=success^ORstatus=success_with_warnings^EQ" type="reference"/>
+        <index name="index">
+            <element name="kb_article"/>
+        </index>
+        <index name="index2">
+            <element name="test"/>
+        </index>
+        <index name="index3">
+            <element name="knowledge_base"/>
+        </index>
+    </element>
+</database>

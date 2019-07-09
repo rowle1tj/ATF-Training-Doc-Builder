@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>x_358560_atf_train.documentationBuilder</api_name>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>documentationBuilder</name>
+        <script><![CDATA[var documentationBuilder = Class.create();
+documentationBuilder.prototype = {
+    initialize: function(data) {
+		this.data = data;
+		if (!data) {
+			this.populateTestData();
+		}
+    },
+	
+	populateTestData: function() {
+		// data will probably come in from the constructor
+		this.data = {
+			articleName: 'The Generated KB Article',
+			selectedKnowledgeBase: 'dfc19531bf2021003f07e2c1ac0739ab',
+			data: [
+				{
+					screenShotID: '5360d481db62330049b1d1b1ca96192c',
+					screenShotImageName: "creality3d-logo.jpgx", // What gets populated in the KB image tag
+					step: "Open Form",
+					description: 'Does the thing that does things.'
+				},
+				{
+					screenShotID: 'bb60d481db62330049b1d1b1ca9619d4', // What gets populated in the KB image tag
+					step: "The Second Step!",
+					description: 'Does the second thing.'
+				},
+				{
+					screenShotID: '0970d481db62330049b1d1b1ca96192f', // What gets populated in the KB image tag
+					step: "The Third Step!",
+					description: 'Is the third thing it does.'
+				},
+			]
+		};
+	},
+	
+	getScreenShotSrc: function(screenShotID) {
+		var grSysAttachment = new GlideRecord('sys_attachment');
+		var returnVal = grSysAttachment.get(screenShotID);
+		if (returnVal) {
+			// width="480" height="315" 
+			var srcHtml = '<img style="align: baseline;" src="data:image/png;base64, ';
+			var sa = new GlideSysAttachment(grSysAttachment);
+			srcHtml += sa.getContentBase64(grSysAttachment);
+			srcHtml += '" alt="something" />';
+			return srcHtml;
+		}
+				
+		return ''; // No image found
+	},
+	
+	buildArticleHtml: function() {
+		var _this = this;
+		var htmlText = '';
+		
+		this.data.data.forEach(function(stepData) {
+			htmlText += '<h3>' + stepData.step + '</h3>';
+			//htmlText += '<img  title="TOOL TIP!" src="' + this.getScreenShotSrc() + '" alt="ALTERNATE TEXT!" align="baseline" border="" hspace="" vspace="" />';
+			htmlText += _this.getScreenShotSrc(stepData.screenShotID);
+			htmlText += '<p>' + stepData.description + '</p>';
+			htmlText += '<hr/>';
+		});
+		
+		return htmlText;
+	},
+	
+	createKnowledgeBaseRecord: function() {
+		var gr = new GlideRecord('kb_knowledge');
+		gr.initialize(); 
+		gr.short_description = this.data.articleName; 
+		gr.kb_knowledge_base = this.data.selectedKnowledgeBase;
+		gr.text = this.buildArticleHtml();
+		
+		gr.insert();
+		return gr.sys_id;
+	},
+
+    type: 'documentationBuilder'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>ben.ennis</sys_created_by>
+        <sys_created_on>2019-06-19 22:13:07</sys_created_on>
+        <sys_id>284b72c7db46330049b1d1b1ca96194c</sys_id>
+        <sys_mod_count>25</sys_mod_count>
+        <sys_name>documentationBuilder</sys_name>
+        <sys_package display_value="ATF Training Doc Builder" source="x_358560_atf_train">9d1bf647db46330049b1d1b1ca96192a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="ATF Training Doc Builder">9d1bf647db46330049b1d1b1ca96192a</sys_scope>
+        <sys_update_name>sys_script_include_284b72c7db46330049b1d1b1ca96194c</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-07-08 03:59:27</sys_updated_on>
+    </sys_script_include>
+</record_update>
